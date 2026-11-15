@@ -1,0 +1,50 @@
+[
+  {
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/zips/modis_2019_all_countries.zip",
+    "member": "modis/2019/modis_2019_Australia.csv",
+    "file": "raw/modis_2019_Australia.csv",
+    "bytes": 25021097,
+    "sha256": "c24edcdf1bd55862c1e7f897006bcd8d3e00f3d4115a8661f4d687137cabfb39",
+    "zip_crc_verified": true,
+    "retrieved_utc": "2026-11-08T05:43:00.663871+00:00",
+    "archive_bytes": 80447291,
+    "archive_sha256_server": "13a581b5d6b28741c81bf01bd27195cf3226b85a29102337f2cd3b2cabf1a517",
+    "method": "HTTP Range: ZIP central directory, local header and Australia member; raw deflate decompression; CRC32 verified"
+  },
+  {
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/zips/modis_2020_all_countries.zip",
+    "member": "modis/2020/modis_2020_Australia.csv",
+    "file": "raw/modis_2020_Australia.csv",
+    "bytes": 12487063,
+    "sha256": "4426abfc1360897daafc066248707696aa84b5e0aba3c6f20183fe455db74176",
+    "zip_crc_verified": true,
+    "retrieved_utc": "2026-11-08T05:42:52.066178+00:00",
+    "archive_bytes": 77958638,
+    "archive_sha256_server": "bb4c7012b8f4d89dbf24da49143c4cecbaef90cc5f504433642189201d6c0ddb",
+    "method": "HTTP Range: ZIP central directory, local header and Australia member; raw deflate decompression; CRC32 verified"
+  },
+  {
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/zips/viirs-snpp_2019_all_countries.zip",
+    "member": "viirs-snpp/2019/viirs-snpp_2019_Australia.csv",
+    "file": "raw/viirs-snpp_2019_Australia.csv",
+    "bytes": 126681711,
+    "sha256": "7f19b3c70f1be553e49bbba8e38cf5f1b8c4fab98ac6a08d972961680d4b2c48",
+    "zip_crc_verified": true,
+    "retrieved_utc": "2026-11-08T05:43:40.235917+00:00",
+    "archive_bytes": 373189317,
+    "archive_sha256_server": "9ae38fbd33aeed67a75f1652009d43cb41e23ff0da2ea8b5100f0fd261111b84",
+    "method": "HTTP Range: ZIP central directory, local header and Australia member; raw deflate decompression; CRC32 verified"
+  },
+  {
+    "url": "https://firms.modaps.eosdis.nasa.gov/data/country/zips/viirs-snpp_2020_all_countries.zip",
+    "member": "viirs-snpp/2020/viirs-snpp_2020_Australia.csv",
+    "file": "raw/viirs-snpp_2020_Australia.csv",
+    "bytes": 68015966,
+    "sha256": "3664ab6ccd2d167f2d77ce25316cfaa4c09bf77f7acc5aee56f1a315df5e5941",
+    "zip_crc_verified": true,
+    "retrieved_utc": "2026-11-08T05:43:18.675994+00:00",
+    "archive_bytes": 367548957,
+    "archive_sha256_server": "2095da8ff74d765d355eac3126d0349c932e5187b3ee7c9fe7eb1a8888572fe3",
+    "method": "HTTP Range: ZIP central directory, local header and Australia member; raw deflate decompression; CRC32 verified"
+  }
+]

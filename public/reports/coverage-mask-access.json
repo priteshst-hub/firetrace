@@ -1,0 +1,23 @@
+{
+  "checked_utc": "2026-11-11T15:21:25.544035+00:00",
+  "probes": [
+    {
+      "product": "MOD14",
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/MOD14.061/MOD14.A2019244.0015.061.2020305035121/MOD14.A2019244.0015.061.2020305035121.hdf",
+      "status": 401,
+      "final_host": "urs.earthdata.nasa.gov"
+    },
+    {
+      "product": "MYD14",
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/MYD14.061/MYD14.A2019244.0255.061.2020305040606/MYD14.A2019244.0255.061.2020305040606.hdf",
+      "status": 401,
+      "final_host": "urs.earthdata.nasa.gov"
+    },
+    {
+      "product": "VNP14IMG",
+      "url": "https://data.lpdaac.earthdatacloud.nasa.gov/lp-prod-protected/VNP14IMG.002/VNP14IMG.A2019244.0300.002.2024095103505/VNP14IMG.A2019244.0300.002.2024095103505.nc",
+      "status": 401,
+      "final_host": "urs.earthdata.nasa.gov"
+    }
+  ]
+}
