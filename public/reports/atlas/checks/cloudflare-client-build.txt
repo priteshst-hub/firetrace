@@ -1,0 +1,16 @@
+
+> site-creator-vinext-starter@0.1.0 build:cloudflare
+> vite build --config vite.cloudflare.config.ts
+
+vite v8.0.13 building client environment for production...
+[2K
+transforming...(node:53519) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✓ 1872 modules transformed.
+rendering chunks...
+computing gzip size...
+dist-cloudflare/index.html                   0.62 kB │ gzip:   0.41 kB
+dist-cloudflare/assets/index-CQ5uoLuZ.css  165.31 kB │ gzip:  30.02 kB
+dist-cloudflare/assets/index-D5mJmMj4.js   345.05 kB │ gzip: 109.79 kB
+
+✓ built in 723ms

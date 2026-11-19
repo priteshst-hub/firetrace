@@ -1,0 +1,13 @@
+
+ ⛅️ wrangler 4.161.0 (update available 4.165.0)
+───────────────────────────────────────────────
+✨ Read 141 files from the assets directory /Users/priteshsukumar/Documents/ChatGPT/nasa space app challenege/firetrace-web/dist-cloudflare
+Total Upload: 76.95 KiB / gzip: 21.05 KiB
+Your Worker has access to the following bindings:
+Binding                                 Resource
+env.AI                                  AI
+env.CHAT_LIMIT (10 requests/60s)        Rate Limit
+env.CHAT_GLOBAL (100 requests/60s)      Rate Limit
+env.ASSETS                              Assets
+
+--dry-run: exiting now.

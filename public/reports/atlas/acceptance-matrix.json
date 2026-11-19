@@ -1,0 +1,172 @@
+[
+  {
+    "requirement": "Actual official historical archives acquired",
+    "status": "COMPLETE",
+    "evidence": "index.json source URLs; source-*.json; original ignored .firms-cache/*.zip"
+  },
+  {
+    "requirement": "Source provenance, date validation and SHA-256 recorded",
+    "status": "COMPLETE",
+    "evidence": "All source audits and NASA-published hashes; actual source date extents"
+  },
+  {
+    "requirement": "More than two populated years shown",
+    "status": "COMPLETE",
+    "evidence": "25 populated MODIS years; Historical Atlas browser check"
+  },
+  {
+    "requirement": "Instrument/platform/version distinctions preserved",
+    "status": "COMPLETE",
+    "evidence": "source_versions in every cell-month; literal version register; version-change flags and by-version evaluation"
+  },
+  {
+    "requirement": "Missing periods are not zero fire years",
+    "status": "COMPLETE",
+    "evidence": "Unavailable sources explicit; pre-VIIRS nulls; absent reference activity null; exposure UNKNOWN"
+  },
+  {
+    "requirement": "Common equal-area grid and UTC units",
+    "status": "COMPLETE",
+    "evidence": "25 km spherical Lambert CEA; date \u00d7 day/night occupancy; methodology.md"
+  },
+  {
+    "requirement": "Actual unified derived dataset generated",
+    "status": "COMPLETE",
+    "evidence": "545347 cell-month rows; /data/atlas/YYYY.json.gz and .csv.gz"
+  },
+  {
+    "requirement": "Incompatible raw sensor counts are not added",
+    "status": "COMPLETE",
+    "evidence": "Raw Terra/Aqua/S-NPP columns separate; indicator averages common-unit occupancy scores"
+  },
+  {
+    "requirement": "Calibration method documented",
+    "status": "COMPLETE",
+    "evidence": "methodology.md and validation.json; fixed training/calibration/test splits"
+  },
+  {
+    "requirement": "Independent multi-year temporal holdout",
+    "status": "COMPLETE",
+    "evidence": "Train [2012, 2013, 2014, 2015, 2016, 2017, 2018]; holdout [2021, 2022, 2023, 2024, 2025]; reference is Aqua occupancy, NOT fire truth"
+  },
+  {
+    "requirement": "Uncertainty and unmatched observations reported",
+    "status": "COMPLETE",
+    "evidence": "Empirical residual interval; unmatched 15/30/60 minute diagnostics; unsupported rows have null intervals"
+  },
+  {
+    "requirement": "Reproducible outputs",
+    "status": "COMPLETE",
+    "evidence": "atlas_pipeline.py; source hashes; pipeline SHA; deterministic gzip; verify_atlas.py"
+  },
+  {
+    "requirement": "Scientific status accurately labelled",
+    "status": "COMPLETE",
+    "evidence": "EXPERIMENTAL throughout; no exposure adjustment or independent fire-accuracy claim"
+  },
+  {
+    "requirement": "Server-side FIRMS Area integration code",
+    "status": "COMPLETE",
+    "evidence": "worker/firms.ts; fixed area/sources; request parsing, cache, timeout and rate limit"
+  },
+  {
+    "requirement": "Credentials remain server-side",
+    "status": "COMPLETE",
+    "evidence": "FIRMS_MAP_KEY Worker secret only; browser uses /api/firms; no key supplied or committed"
+  },
+  {
+    "requirement": "Freshness, stale data and error states",
+    "status": "COMPLETE",
+    "evidence": "Timestamp separation; stale thresholds; local HTTP 503 observed; mocked valid/partial/invalid response tests"
+  },
+  {
+    "requirement": "Historical Atlas works",
+    "status": "COMPLETE",
+    "evidence": "Desktop/mobile year and period selectors, real monthly rows, download verification"
+  },
+  {
+    "requirement": "Harmonization Lab works",
+    "status": "COMPLETE",
+    "evidence": "Actual coefficient, holdout scores and limitations loaded in browser"
+  },
+  {
+    "requirement": "Historical COMMAND preserved",
+    "status": "COMPLETE",
+    "evidence": "11 JS tests include existing COMMAND; browser decision-brief export verified"
+  },
+  {
+    "requirement": "Existing globe preserved",
+    "status": "COMPLETE",
+    "evidence": "Browser rotation paused, zoom and visible rendered globe; existing global CSV reconciled"
+  },
+  {
+    "requirement": "Existing exports preserved",
+    "status": "COMPLETE",
+    "evidence": "Global CSV 4,055,050 MODIS / 17,051,416 VIIRS; Black Summer 97,185 / 542,727; COMMAND brief platform counts verified"
+  },
+  {
+    "requirement": "No fabricated released data",
+    "status": "COMPLETE",
+    "evidence": "Official ZIP/member validation; complete field-by-field CSV/JSON and raw-count reconciliation"
+  },
+  {
+    "requirement": "Desktop and mobile browser regression",
+    "status": "COMPLETE",
+    "evidence": "browser-regression.json; screenshots and downloaded files in ignored output/playwright and .playwright-cli"
+  },
+  {
+    "requirement": "Python calculation tests",
+    "status": "COMPLETE",
+    "evidence": "engineering-checks.json; python-calculations exit code"
+  },
+  {
+    "requirement": "TypeScript",
+    "status": "COMPLETE",
+    "evidence": "engineering-checks.json; typescript exit code"
+  },
+  {
+    "requirement": "Cloudflare client build and Worker package",
+    "status": "COMPLETE",
+    "evidence": "engineering-checks.json; client build and deploy --dry-run exit codes"
+  },
+  {
+    "requirement": "Production dependency audit",
+    "status": "COMPLETE",
+    "evidence": "dependency-audit.json: zero production vulnerabilities"
+  },
+  {
+    "requirement": "Export validation and data reconciliation",
+    "status": "COMPLETE",
+    "evidence": "reconciliation.json: source totals, hashes, all JSON/CSV fields, mathematical equation and acquisition diagnostics"
+  },
+  {
+    "requirement": "Browser regression",
+    "status": "COMPLETE",
+    "evidence": "browser-regression.json; actual local Cloudflare Worker"
+  },
+  {
+    "requirement": "At least 20 MODIS years and 10 overlapping years",
+    "status": "COMPLETE",
+    "evidence": "25 MODIS years, 14 overlapping years; target years without sources: []"
+  },
+  {
+    "requirement": "Fully observation-adjusted scientifically validated harmonization",
+    "status": "BLOCKED",
+    "evidence": "MOD14.061, MYD14.061, VNP14IMG.002 probes all HTTP 401; valid-observation/cloud masks absent; independent fire truth not acquired"
+  },
+  {
+    "requirement": "Genuine authenticated LIVE/NRT request and parsed response",
+    "status": "BLOCKED",
+    "evidence": "No authorized MAP_KEY configured; no authenticated NASA request verified; exact secure configuration in live-configuration.md"
+  },
+  {
+    "requirement": "End-to-end review of genuine current detections",
+    "status": "PARTIAL",
+    "evidence": "Recent-evidence review and downloads implemented; positive live workflow awaits genuine authenticated feed"
+  },
+  {
+    "requirement": "Release preparation",
+    "status": "COMPLETE",
+    "evidence": "Current branch; checks and browser results attached; production NOT deployed"
+  }
+]

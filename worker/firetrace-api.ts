@@ -1,11 +1,13 @@
 
 import knowledge from './knowledge.json';
+import { handleFirms } from './firms';
 
 type Limiter = {
   limit: (input: { key: string }) => Promise<{ success: boolean }>;
 };
 
 interface Env {
+  FIRMS_MAP_KEY?: string;
   ASSETS: {
     fetch: (request: Request) => Promise<Response>;
   };
@@ -27,6 +29,7 @@ type ChatMessage = {
 const MODEL_ID = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 
 const sources = [
+  { title: 'Australia Atlas method and limitations', url: '/reports/atlas/methodology.md' },
   {
     title: 'How FireTrace works',
     url: '/reports/firetrace-guide.md'
@@ -177,7 +180,7 @@ Use the trusted PROJECT REFERENCE supplied below.
 Do not invent statistics, dates, country counts, or capabilities.
 
 SCIENTIFIC RULES:
-- FireTrace contains historical observations, not live fire data.
+- Global globe and COMMAND replay are historical. The separate Australia Atlas and experimental bridge are described by atlas_upgrade when present. A separate NRT endpoint requires a Worker MAP_KEY; do not assume authenticated verification or current detections.
 - Detection totals represent retained source CSV rows.
 - Detections are not unique wildfires or burned area.
 - Map marks represent geographic cell centers.
@@ -528,6 +531,8 @@ export async function handleChat(
 const worker = {
   async fetch(request: Request, env: Env) {
     const path = new URL(request.url).pathname;
+
+    if (path === '/api/firms') return handleFirms(request, env);
 
     if (path === '/api/chat') {
       return handleChat(request, env);
