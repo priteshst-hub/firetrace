@@ -31,6 +31,12 @@ function ObservationEvidence({ site, month, onLocate }: { site: Site; month: Mon
         <div><dt>Observation age</dt><dd>{ageRange(month, new Date())}</dd></div>
         <div><dt>Months with recorded activity</dt><dd>{review.observedMonths.length} through {monthLabel(month, 'short')}</dd></div>
       </dl>
+      <h3>MODIS × VIIRS evidence comparison</h3>
+      <p>{review.counts.modis > 0 && review.counts.viirs > 0
+        ? 'Both instrument families report in this cell and month. This is agreement on recorded activity at monthly grid scale.'
+        : 'Only one instrument family reports in this cell and month. This is a difference in recorded evidence, with the cause unresolved.'}</p>
+      <p className="command-note">Counts differ by {number.format(Math.abs(review.counts.modis - review.counts.viirs))} retained records. Different pixel sizes, overpasses and detection characteristics affect this difference. The archive supplies no complete observation or cloud mask, so a missing report cannot establish sensor disagreement about fire presence.</p>
+      <p className="command-note">A shared month and 10 km cell can contain unrelated detections. Temporal coincidence, matched incidents and cross-sensor accuracy remain unmeasured here. The dated extract below permits inspection of individual acquisition minutes for its bounded sample.</p>
       <table className="command-table">
         <caption className="command-visually-hidden">Archived observations by satellite and day or night classification</caption>
         <thead><tr><th scope="col">Instrument / platform</th><th scope="col">Day</th><th scope="col">Night</th></tr></thead>
@@ -265,6 +271,7 @@ export default function CommandWorkspace({ onLocate }: {
           <span>Black Summer · Southeastern Australia</span>
           <span>Near-real-time feed unavailable</span>
         </div>
+        <p><a className="command-source-link" href="#command-candidates">Start with a candidate</a> · <a className="command-source-link" href="#command-brief">Review the decision brief</a></p>
         <p className="command-flow">Satellite evidence → warning candidate → analyst decision → response brief</p>
         <p className="command-review-context">Review priority orders human verification. This replay is for research and demonstration.</p>
       </header>
@@ -338,7 +345,9 @@ export default function CommandWorkspace({ onLocate }: {
           <div>
             <h2 id="command-export"><Database size={18} aria-hidden="true" /> Evidence and audit trail</h2>
             <p className="command-note">{CASE_ID} · NASA FIRMS standard archive products</p>
+            <p className="command-note">The global archive covers 2019–2020. Command covers September 2019–March 2020 in southeastern Australia. Two years cannot establish long-term trends or performance across other seasons, regions or current incidents. Priorities require independent validation.</p>
             <div className="command-links">
+              <a href="https://github.com/priteshst-hub/firetrace">Public GitHub repository</a>
               <a href={ARCHIVE_PATH}>Monthly grid source</a>
               <a href="/reports/provenance.json">Source inventory and SHA-256</a>
               <a href="https://firms.modaps.eosdis.nasa.gov/api/area/">NASA FIRMS Area API</a>

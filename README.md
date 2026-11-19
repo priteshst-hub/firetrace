@@ -22,6 +22,8 @@ The repository includes the browser aggregates, research reports, processing scr
 
 React/Vinext interface using verified NASA FIRMS observations. Research prototype: no calibrated harmonization, live alerts or unique-fire counts.
 
+Public source repository: [priteshst-hub/firetrace](https://github.com/priteshst-hub/firetrace).
+
 ## FireTrace Command
 
 Select **FireTrace Command** in the main navigation to replay the Black Summer archive. The workspace uses FireTrace’s existing monthly 10 km grid data for southeastern Australia, September 2019 through March 2020 UTC. Filters search grid coordinates and review priority within the selected month. **Locate cell in Australia study** opens the same grid center and month on the existing map.
