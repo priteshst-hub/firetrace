@@ -22,6 +22,50 @@ The repository includes the browser aggregates, research reports, processing scr
 
 React/Vinext interface using verified NASA FIRMS observations. Research prototype: no calibrated harmonization, live alerts or unique-fire counts.
 
+## FireTrace Command
+
+Select **FireTrace Command** in the main navigation to replay the Black Summer archive. The workspace uses FireTrace’s existing monthly 10 km grid data for southeastern Australia, September 2019 through March 2020 UTC. Filters search grid coordinates and review priority within the selected month. **Locate cell in Australia study** opens the same grid center and month on the existing map.
+
+### Review rules
+
+The monthly screen uses the selected month and earlier months in the replay only. The thresholds are unvalidated demonstrations and order analyst review.
+
+| Priority | First matching rule |
+| --- | --- |
+| Insufficient evidence | Invalid cell or period, or zero retained observations in the selected month |
+| Prompt verification | MODIS and VIIRS both report in the selected month and the cell has at least two occupied months through that month |
+| Analyst review | Either of those conditions holds |
+| Monitor | One instrument family reports in the selected month, the only occupied month through that point |
+
+The source applies type 0, MODIS confidence ≥30 and VIIRS nominal/high filters. Recurring months record activity in the same cell. The count does not identify distinct passes, wildfires or periods of continuous burning. The archive lacks a coverage mask, so zero retained rows leave fire activity unknown.
+
+The **dated archive extract** comes from hash-verified FIRMS source inputs for one retrospectively selected cell and a fixed UTC date window. The checkpoint reveals actual acquisition minutes, detection-pixel coordinates, platform and product quality. Use it to see how the next verification check changes as evidence accumulates. The full-month brief is a separate retrospective assessment. Acquisition time alone cannot establish ignition, publication time, time of ingest or alert latency.
+
+The downloaded text brief includes the selected evidence, exact rule match, analyst disposition, tagged verification steps, source hashes and generation time. Disposition is kept until page reload and recorded in the downloaded brief. This is a non-operational research prototype. The near-real-time workflow is unavailable. It requires authorized server-side FIRMS access and feed verification. See the [NASA FIRMS Area API](https://firms.modaps.eosdis.nasa.gov/api/area/) and the [original Australia source register](public/reports/provenance.json).
+
+### Local demonstration
+
+```sh
+npm run build:cloudflare
+npx vite preview --config vite.cloudflare.config.ts
+```
+
+1. Open **FireTrace Command**. The default January 2020 cell at 37.2821° S, 149.1025° E contains 194 MODIS and 1,279 VIIRS reports and receives **Analyst review**.
+2. In the **Dated archive extract**, advance from before the first retained record to January 4 at 04:00 UTC, then 13:29 UTC. The extract changes from 14 VIIRS rows to 16 rows across VIIRS and MODIS. Open the source rows to inspect detection coordinates and confidence.
+3. Switch the monthly timeline to February 2020. The same cell has one MODIS and four VIIRS reports. With both families present and records in two months, the screen assigns **Prompt verification**.
+4. Record **Seek independent evidence** and download the response brief. Read the evidence and generic verification steps back from the file.
+
+```sh
+node --test tests/firetrace-command.test.mjs
+python3 scripts/build-command-sample.py --check
+npx tsc --noEmit
+npm run build:cloudflare
+npm audit --omit=dev
+git diff --check
+```
+
+The Python reconstruction requires the verified filtered CSVs from the sibling `firetrace-data-gate/filtered` directory, or an equivalent directory passed with `--input-dir`. The browser and Node tests use the committed archive assets.
+
 ## Current worldwide extension
 
 The globe now supports separate MODIS Terra/Aqua and VIIRS Suomi-NPP layers for both 2019 and 2020, year/month/day-night/platform filters, country search and selection, annual comparisons and filter-labelled CSV. The original MODIS-only 2020 archive and both Australian views are preserved.
@@ -58,7 +102,7 @@ The data preparation requires the sibling firetrace-data-gate and firetrace-anal
 - Comparison: 5/10/20 km grids, day/night strata and 15/30/60 minute windows using actual temporal-analysis summaries.
 - Methods: provenance, study boundary, filters, original collection labels, input hashes and downloadable reports.
 
-Map marks are 10 km equal-area grid centers; reports document exact projection and filtering. Basemap is the public-domain Natural Earth 1:50m country geometry from https://github.com/nvkelso/natural-earth-vector. City labels provide orientation. Full observations are in the sibling research folders; the web bundle contains reproducible aggregates only.
+Map marks are 10 km equal-area grid centers; reports document exact projection and filtering. Basemap is the public-domain Natural Earth 1:50m country geometry from https://github.com/nvkelso/natural-earth-vector. City labels provide orientation. The full observations remain in the sibling research folders. The web bundle includes reproducible aggregates and the bounded Command source-row extract.
 
 ## Design
 

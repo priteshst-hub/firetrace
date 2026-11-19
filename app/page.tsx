@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import LearnFireTrace from './components/LearnFireTrace';
 import ProjectAssistant from './components/ProjectAssistant';
 import GlobalExplorer from './components/GlobalExplorer';
+import CommandWorkspace from './components/CommandWorkspace';
+import type { Month } from '../lib/firetrace/command';
 import { Globe2, ArrowDownToLine, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Crosshair, Database, Flame, Layers, Map as MapIcon, Maximize2, Minus, Plus, Radio, ShieldCheck, SlidersHorizontal, X } from 'lucide-react';
 
 type Cell=[string,number,number,number,number,number,number,number,number];
@@ -11,7 +13,7 @@ type Dataset={cells:Cell[];input_sha256:Record<string,string>;source_counts:Reco
 type Timing=Record<string,string>;
 type Geometry={type:string;coordinates:number[][][]|number[][][][]};
 type Geo={features:{geometry:Geometry}[]};
-type View='learn'|'global'|'explore'|'timing'|'methods';
+type View='command'|'learn'|'global'|'explore'|'timing'|'methods';
 const MONTHS=['2019-09','2019-10','2019-11','2019-12','2020-01','2020-02','2020-03'];
 const LABELS=['Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
 const FULL=['September 2019','October 2019','November 2019','December 2019','January 2020','February 2020','March 2020'];
@@ -39,6 +41,7 @@ export default function Home() {
  const [data,setData]=useState<Dataset|null>(null);const [geo,setGeo]=useState<Geo|null>(null);const [timing,setTiming]=useState<Timing[]>([]);
  const mainRef=useRef<HTMLElement>(null);
  const [chatOpen,setChatOpen]=useState(false);
+ const [commandVisited,setCommandVisited]=useState(false);
  const [error,setError]=useState('');const [view,setView]=useState<View>('global');
  useEffect(()=>{
   const media=matchMedia('(prefers-reduced-motion: reduce)');
@@ -91,26 +94,32 @@ export default function Home() {
  function exportData(){download(`firetrace_${month}_${platform}_${day}_10km.csv`,plot);setExported(true);}
  const currentTiming=timing.filter(r=>r.grid_km===grid&&r.offset_cell_fraction==='0'&&r.daynight===stratum&&r.modis_platform!=='Combined_MODIS');
  const selected=cell?plot.find(c=>c.lon===cell.lon&&c.lat===cell.lat):null;
+ function locateCommandCell(period:Month, selectedCell:PlotCell) {
+  setMonth(period);setPlatform('Combined_MODIS');setDay('ALL');
+  setModis(true);setViirs(true);setZoom(1);setCell(selectedCell);setExported(false);setView('explore');
+  window.scrollTo(0,0);
+ }
 
- return <div className="app-shell">
+ return <div className={view==='command'?'app-shell command-view':'app-shell'}>
   <a className="skip-link" href="#main">Skip to workspace</a>
   <aside className="sidebar">
    <a href="#" className="brand" onClick={e=>{e.preventDefault();setView('global');}} aria-label="FireTrace home"><span className="brand-symbol"><Flame size={27} strokeWidth={1.7}/></span><span>FireTrace<span className="brand-sub">SATELLITE RESEARCH LAB</span></span></a>
    <div className="workspace-label">WORKSPACE <span>01</span></div>
    <nav aria-label="Main navigation">
-    {[{id:'learn',name:'How it works',icon:CircleHelp},{id:'global',name:'Compare sensors',icon:Globe2},{id:'explore',name:'Australia case study',icon:MapIcon},{id:'timing',name:'Sensor comparison',icon:Radio},{id:'methods',name:'Data & methodology',icon:Database}].map(({id,name,icon:Icon})=><button key={id} className={`nav-item ${view===id?'active':''}`} aria-label={name} aria-current={view===id?'page':undefined} onClick={()=>setView(id as View)}><Icon size={18}/><span>{name}</span>{view===id&&<span className="nav-dot"/>}</button>)}
+    {[{id:'command',name:'FireTrace Command',icon:Crosshair},{id:'learn',name:'How it works',icon:CircleHelp},{id:'global',name:'Compare sensors',icon:Globe2},{id:'explore',name:'Australia case study',icon:MapIcon},{id:'timing',name:'Sensor comparison',icon:Radio},{id:'methods',name:'Data & methodology',icon:Database}].map(({id,name,icon:Icon})=><button key={id} className={`nav-item ${view===id?'active':''}`} aria-label={name} aria-current={view===id?'page':undefined} onClick={()=>{if(id==='command')setCommandVisited(true);setView(id as View);}}><Icon size={18}/><span>{name}</span>{view===id&&<span className="nav-dot"/>}</button>)}
    </nav>
    <div className="study-box"><span className="tiny">{(view==='global'||view==='learn')?'CURRENT WORKSPACE':'CURRENT STUDY'}</span><div className="study-outline"><Crosshair size={20}/><span>{(view==='global'||view==='learn')?'Planet Earth':<>Southeastern<br/>Australia</>}</span></div><p>{(view==='global'||view==='learn')?'Country explorer':'Black Summer'}<br/><span>2019 — 2020</span></p><div className="study-status"><span/> Historical observations</div></div>
    <div className="sidebar-bottom"><div className="source-sign"><span className="orbit"><Database size={17}/></span><span>Powered by public data<br/><strong>NASA FIRMS</strong></span></div><button className="help-link" onClick={()=>setGuide(true)}><CircleHelp size={17}/> Reading this workspace <ArrowUpRight size={15}/></button><span className="version">RESEARCH PROTOTYPE · V0.1</span></div>
   </aside>
   <div className="workspace">
-   <header className="topbar"><div className="breadcrumb">Workspace <span>/</span> <strong>{view==='learn'?'Start here':view==='global'?'Global observatory':view==='explore'?'Australia study':view==='timing'?'Sensor comparison':'Data & methodology'}</strong></div><div className="top-status"><span className="status-dot"/> Verified source files <span className="divider"/> <span className="mono">11 NOV 2026</span></div></header>
+   <header className="topbar"><div className="breadcrumb">Workspace <span>/</span> <strong>{view==='command'?'FireTrace Command':view==='learn'?'Start here':view==='global'?'Global observatory':view==='explore'?'Australia study':view==='timing'?'Sensor comparison':'Data & methodology'}</strong></div><div className="top-status"><span className="status-dot"/> Verified source files <span className="divider"/> <span className="mono">11 NOV 2026</span></div></header>
    <main id="main" ref={mainRef}>
-    <div className="page-heading"><div><div className="eyebrow"><span className="orange-line"/> {view==='learn'?'A FIELD GUIDE TO FIRETRACE':view==='global'?'NASA FIRMS / MODIS × VIIRS':'THE BLACK SUMMER STUDY'}</div><h1>{view==='learn'?'Why. How. What you can learn.':view==='global'?'Same Earth. Different observations.':view==='explore'?'Black Summer, in focus.':view==='timing'?'Same place. Different times.':'Evidence comes first.'}</h1><p>{view==='learn'?'Understand the purpose, explore the evidence, and ask better questions.':view==='global'?'Compare what MODIS and VIIRS reported for the same place and period. Understand why the counts differ.':view==='explore'?'Two satellite systems. One extraordinary fire season. Explore what each observed.':view==='timing'?'Compare when satellites observed the same occupied grid cells.':"Every observation has a source. Every comparison has a limit."}</p></div>{view!=='global'&&view!=='learn'&&<button className="export-button" onClick={view==='explore'?exportData:()=>{window.location.href=view==='timing'?'/reports/temporal_sensitivity.csv':'/reports/harmonization-plan.md';}} disabled={view==='explore'&&!data}><ArrowDownToLine size={16}/>{exported&&view==='explore'?'CSV downloaded':'Export '+(view==='explore'?'view':view==='timing'?'results':'protocol')}</button>}</div>
+    {commandVisited&&<div hidden={view!=='command'}><CommandWorkspace onLocate={locateCommandCell}/></div>}
+    {view!=='command'&&<div className="page-heading"><div><div className="eyebrow"><span className="orange-line"/> {view==='learn'?'A FIELD GUIDE TO FIRETRACE':view==='global'?'NASA FIRMS / MODIS × VIIRS':'THE BLACK SUMMER STUDY'}</div><h1>{view==='learn'?'Why. How. What you can learn.':view==='global'?'Same Earth. Different observations.':view==='explore'?'Black Summer, in focus.':view==='timing'?'Same place. Different times.':'Evidence comes first.'}</h1><p>{view==='learn'?'Understand the purpose, explore the evidence, and ask better questions.':view==='global'?'Compare what MODIS and VIIRS reported for the same place and period. Understand why the counts differ.':view==='explore'?'Two satellite systems. One extraordinary fire season. Explore what each observed.':view==='timing'?'Compare when satellites observed the same occupied grid cells.':"Every observation has a source. Every comparison has a limit."}</p></div>{view!=='global'&&view!=='learn'&&<button className="export-button" onClick={view==='explore'?exportData:()=>{window.location.href=view==='timing'?'/reports/temporal_sensitivity.csv':'/reports/harmonization-plan.md';}} disabled={view==='explore'&&!data}><ArrowDownToLine size={16}/>{exported&&view==='explore'?'CSV downloaded':'Export '+(view==='explore'?'view':view==='timing'?'results':'protocol')}</button>}</div>}
     {view==='learn'&&<LearnFireTrace onExplore={()=>setView('global')} onAsk={()=>setChatOpen(true)}/>}
     <div hidden={view!=='global'}><GlobalExplorer active={view==='global'} onStudy={()=>setView('explore')}/></div>
-    {view!=='global'&&error&&<div role="alert" className="error-box">{error} <button onClick={()=>window.location.reload()}>Try again</button></div>}
-    {view!=='global'&&!data&&!error&&<div className="loading" role="status"><Radio size={22}/> Loading verified observations…</div>}
+    {view!=='global'&&view!=='command'&&error&&<div role="alert" className="error-box">{error} <button onClick={()=>window.location.reload()}>Try again</button></div>}
+    {view!=='global'&&view!=='command'&&!data&&!error&&<div className="loading" role="status"><Radio size={22}/> Loading verified observations…</div>}
     {data&&view==='explore'&&<>
      <section className="filter-bar" aria-label="Observation filters"><div className="region-name"><Crosshair size={17}/><strong>Southeastern Australia</strong><span className="country-code">AU</span></div><div className="filter-select"><label htmlFor="period">Period</label><select id="period" aria-label="Period" value={month} onChange={e=>changeFilter(()=>setMonth(e.target.value))}><option value="ALL">Full season · Sep ’19 – Mar ’20</option>{MONTHS.map((m,i)=><option key={m} value={m}>{FULL[i]}</option>)}</select><ChevronDown size={14}/></div><div className="segment" aria-label="Acquisition time">{[['ALL','Day + night'],['D','Day'],['N','Night']].map(([id,label])=><button key={id} aria-pressed={day===id} className={day===id?'selected':''} onClick={()=>changeFilter(()=>setDay(id))}>{label}</button>)}</div></section>
      <section className="metrics" aria-label="Selected observation counts"><div className="metric"><span><i className="sensor-dot orange"/>MODIS observations</span><strong>{fmt(totals[0])}<small>1 km nominal</small></strong><p>{platform==='Combined_MODIS'?'Terra + Aqua':platform} · Collection 6 (6.03)</p></div><div className="metric"><span><i className="sensor-dot teal"/>VIIRS observations</span><strong>{fmt(totals[1])}<small>375 m nominal</small></strong><p>Suomi-NPP · Collection 2</p></div><div className="metric"><span><Layers size={14}/>Occupied grid cells</span><strong>{fmt(plot.length)}<small>10 km grid</small></strong><p>At least one retained sensor detection</p></div></section>
