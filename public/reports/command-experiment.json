@@ -1,0 +1,78 @@
+{
+  "status": "Exploratory detection-conditional adjustment; harmonized estimate unsupported",
+  "protocol": "10 km equal-area grid at standard parallel -34 degrees; same UTC date and source day/night; acquisition-minute groups; Aqua groups sorted ascending, nearest unused VIIRS minute within 30 minutes, earlier minute wins ties. Each group paired at most once. Adjacent cells and cross-midnight pairs excluded. Groups count pixels, not incidents.",
+  "calibration": "Least-squares through origin: Aqua count = coefficient \u00d7 VIIRS count. Training September\u2013December 2019, holdout January\u2013March 2020. Matching uses no fitted coefficients.",
+  "coefficient": 0.09650055297273727,
+  "training": {
+    "n": 4581,
+    "mae": 3.4804863241056814,
+    "rmse": 5.74756609380915,
+    "bias": -2.2142574333149363
+  },
+  "holdout_corrected": {
+    "n": 2042,
+    "mae": 3.6477818690886084,
+    "rmse": 6.818283730919389,
+    "bias": -2.716845371680237
+  },
+  "holdout_uncorrected": {
+    "n": 2042,
+    "mae": 23.3256611165524,
+    "rmse": 44.1484839897093,
+    "bias": 23.08863858961802
+  },
+  "holdout_dates": 53,
+  "bootstrap": {
+    "seed": 1729,
+    "replicates": 500,
+    "mae_improvement_95_percentile_interval": [
+      12.217991747928828,
+      25.448076665222274
+    ],
+    "unit": "UTC holdout date blocks; fitted coefficient fixed"
+  },
+  "retained": {
+    "Aqua": 54985,
+    "VIIRS": 542727
+  },
+  "paired_retained": {
+    "Aqua": 34617,
+    "VIIRS": 196120
+  },
+  "unmatched_retained": {
+    "Aqua": 20368,
+    "VIIRS": 346607
+  },
+  "inputs": [
+    {
+      "file": "modis_SE_Australia_20190901_20200331.csv",
+      "sha256": "159bdde33478968afe9a6698d419bec1378213201751caf289ade087fe499efc",
+      "retained_rows": 54985,
+      "first": "2019-09-01",
+      "last": "2020-03-31"
+    },
+    {
+      "file": "viirs-snpp_SE_Australia_20190901_20200331.csv",
+      "sha256": "6a73e6ee3005cbc1f3b7e028666d1f4b43db8651eca8b6999399b3c9362ffbcd",
+      "retained_rows": 542727,
+      "first": "2019-09-01",
+      "last": "2020-03-31"
+    }
+  ],
+  "limitations": [
+    "Both groups require positive detections, excluding non-detection and clear-sky exposure.",
+    "Valid-observation/cloud masks and footprint intersections are unavailable.",
+    "Aqua and VIIRS nominal resolutions differ; shared grid/time is no proof of the same fire.",
+    "Temporal split divides Black Summer and offers no independent seasonal or spatial validation.",
+    "Bootstrap measures sampled date variability, excluding training, geolocation and coverage uncertainty.",
+    "C6 MODIS 6.03 and C2 VIIRS identities are preserved. No calibrated operational series is released."
+  ],
+  "historical_inventory": {
+    "available_years": [
+      2019,
+      2020
+    ],
+    "additional_verified_years": [],
+    "requirement": "Acquire NASA FIRMS standard Australia MODIS and VIIRS country archives for additional overlapping years, preserve collection/version and source checksums, verify ZIP/member integrity, dates, filtering and counts. Obtain valid-observation/cloud masks for coverage-adjusted calibration."
+  }
+}
