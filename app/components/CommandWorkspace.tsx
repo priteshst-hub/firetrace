@@ -9,6 +9,7 @@ import {
 } from '../../lib/firetrace/command';
 import type { Archive, Disposition, ExactSample, Month, Priority, Site } from '../../lib/firetrace/command';
 import './command.css';
+import experiment from '../../public/reports/command-experiment.json';
 
 const DEFAULT_SITE = '149.1025,-37.2821';
 const number = new Intl.NumberFormat('en-US');
@@ -341,6 +342,15 @@ export default function CommandWorkspace({ onLocate }: {
             onDisposition={value => { setDispositions(previous => ({ ...previous, [reviewKey]: value })); setDownloaded(''); }} />}
         </div>}
 
+        <section className="command-section" aria-labelledby="command-experiment">
+          <h2 id="command-experiment">Experimental Aqua–VIIRS adjustment</h2>
+          <p>Raw observations above remain the evidence for review. This separate experiment pairs acquisition-minute groups within the same 10 km cell, UTC date and day/night class, using a 30-minute maximum gap.</p>
+          <p>A coefficient of {experiment.coefficient.toFixed(4)} was fitted on {experiment.training.n.toLocaleString()} September–December 2019 pairs. On {experiment.holdout_corrected.n.toLocaleString()} January–March 2020 holdout pairs, mean absolute error was {experiment.holdout_corrected.mae.toFixed(2)} Aqua records per group, versus {experiment.holdout_uncorrected.mae.toFixed(2)} for unadjusted VIIRS counts. Corrected RMSE was {experiment.holdout_corrected.rmse.toFixed(2)} and bias was {experiment.holdout_corrected.bias.toFixed(2)}.</p>
+          <p>The 500-replicate holdout-date bootstrap gives an MAE improvement interval of {experiment.bootstrap.mae_improvement_95_percentile_interval.map(value => value.toFixed(2)).join('–')} records per group. It excludes training and coverage uncertainty.</p>
+          <p>{experiment.unmatched_retained.Aqua.toLocaleString()} Aqua and {experiment.unmatched_retained.VIIRS.toLocaleString()} VIIRS records were unmatched. Positive-detection selection, missing cloud/observation masks and the single-season split prevent a validated harmonized estimate. These results measure conditional count fit, with Aqua serving as a reference measurement.</p>
+          <p className="command-note">Verified local archives cover 2019 and 2020 only. Additional-year analysis requires new verified standard-product archives. Coverage masks remain an additional acquisition requirement.</p>
+          <a className="command-source-link" href="/reports/command-experiment.json">Download protocol, metrics and input hashes</a>
+        </section>
         <section className="command-section command-export" aria-labelledby="command-export">
           <div>
             <h2 id="command-export"><Database size={18} aria-hidden="true" /> Evidence and audit trail</h2>
