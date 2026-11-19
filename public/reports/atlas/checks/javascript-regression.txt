@@ -1,0 +1,19 @@
+✔ actual archive rows reconcile and triage is deterministic without lookahead (2.042583ms)
+✔ many observations in one month do not count as repeat dates or a continuous incident (0.163625ms)
+✔ zero observations, invalid grids and missing periods yield insufficient evidence (0.287875ms)
+✔ invalid and incomplete JSON responses fail closed (0.502916ms)
+✔ source extract handles missing and impossible minutes, wrong grids and invalid confidence (1.751709ms)
+✔ dated checkpoint reveals only acquired rows and updates verification evidence (0.77025ms)
+✔ response brief records exact visible evidence, priority, disposition and source (43.266125ms)
+✔ FIRMS parser preserves observed evidence, deduplicates exact rows and handles CSV quoting (8.116125ms)
+✔ invalid, stale, impossible dates and API error bodies never become detections (0.542417ms)
+✔ missing credentials produce explicit unavailable state without contacting NASA (33.361125ms)
+✔ feed caches genuine parsed response, preserves partial source failure and does not expose keys (2.900083ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 268.403334

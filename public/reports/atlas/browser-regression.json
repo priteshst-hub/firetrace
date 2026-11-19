@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "environment": "Actual local Cloudflare Worker at 127.0.0.1:8787; Playwright Chromium",
+  "checks": [
+    {
+      "name": "Existing historical COMMAND loads and exports brief",
+      "status": "PASS",
+      "evidence": "Downloaded .playwright-cli/firetrace-black-summer-2020-01--37-2821-149-1025.txt; verified historical mode, Terra 71, Aqua 123, VIIRS 1279 and MODIS 194"
+    },
+    {
+      "name": "Existing globe renders, zooms and pauses rotation",
+      "status": "PASS",
+      "evidence": "Observed rendered globe and Rotation paused state; screenshot output/playwright/existing-globe-desktop.png"
+    },
+    {
+      "name": "Existing worldwide CSV export reconciles",
+      "status": "PASS",
+      "rows": 12675,
+      "modis": 4055050,
+      "viirs_snpp": 17051416
+    },
+    {
+      "name": "Existing Black Summer CSV export reconciles",
+      "status": "PASS",
+      "rows": 3328,
+      "modis": 97185,
+      "viirs_snpp": 542727
+    },
+    {
+      "name": "Actual Worker missing-credential response",
+      "status": "PASS",
+      "evidence": "Browser GET /api/firms returned expected HTTP 503; visible NASA MAP_KEY unavailable message; no invented detections"
+    },
+    {
+      "name": "Interim mobile atlas",
+      "status": "PASS",
+      "evidence": "390x844 viewport; visible real source years and accessible labelled selectors; screenshot output/playwright/atlas-mobile-interim.png"
+    },
+    {
+      "name": "Final desktop Atlas",
+      "status": "PASS",
+      "years": 25,
+      "source_years": 39,
+      "overlap_years": 14,
+      "evidence": "Actual year options and period filtering verified; pre-Aqua 2001 cells show Unavailable; atlas-desktop-final.png"
+    },
+    {
+      "name": "Actual browser compressed export",
+      "status": "PASS",
+      "year": 2025,
+      "rows": 27672,
+      "sha256": "8a784d825dfe636eb329efdfd36b94356b216fd93d7862fbfda0ad943903513c",
+      "evidence": "Browser download exactly matches released 2025.csv.gz"
+    },
+    {
+      "name": "Final Harmonization Lab",
+      "status": "PASS",
+      "holdout_pairs": 64643,
+      "evidence": "Actual results visible; lab-desktop-final.png and lab-mobile-final.png"
+    },
+    {
+      "name": "Final mobile layouts",
+      "status": "PASS",
+      "viewport_width": 390,
+      "document_width": 390,
+      "evidence": "Atlas, Lab and Recent Detections; atlas-mobile-final.png, lab-mobile-final.png, recent-mobile-final.png"
+    },
+    {
+      "name": "COMMAND links to separate LIVE/NRT workspace",
+      "status": "PASS",
+      "evidence": "Actual callback button opens separate Recent Detections; Worker HTTP 503 and unavailable JSON verified; no fabricated rows"
+    }
+  ],
+  "pending": [],
+  "not_verified": [
+    "Genuine authenticated NASA live request; no authorized MAP_KEY supplied",
+    "Positive current-detection analyst flow against an authenticated feed"
+  ],
+  "console_note": "One expected browser resource error for the explicit HTTP 503 missing-key API response; no other observed console errors in these checks.",
+  "completed_at": "2026-11-19T20:23:27.657341+00:00"
+}

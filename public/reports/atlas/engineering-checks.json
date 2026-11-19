@@ -1,0 +1,125 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "production-dependency-audit",
+      "command": [
+        "npm",
+        "audit",
+        "--omit=dev",
+        "--json"
+      ],
+      "exit_code": 0,
+      "recorded_at": "2026-11-19T19:59:06.789031+00:00",
+      "log": "/reports/atlas/dependency-audit.json",
+      "sha256": "3ff92970a983f82481a2fce70ef5826331267072d6922e9db3f01469ad681e2b",
+      "note": "Executed earlier in this release session; dependency files unchanged."
+    },
+    {
+      "check": "python-calculations",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-19T20:21:05.219791+00:00",
+      "duration_seconds": 0.212,
+      "log": "/reports/atlas/checks/python-calculations.txt",
+      "sha256": "8750d4b5acdce1e4d680a3a27eb5d68370ed8b7d37b619aa32e9e0049f881dae"
+    },
+    {
+      "check": "javascript-regression",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "tests/firetrace-command.test.mjs",
+        "tests/firms.test.mjs"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-19T20:21:05.431785+00:00",
+      "duration_seconds": 0.383,
+      "log": "/reports/atlas/checks/javascript-regression.txt",
+      "sha256": "50f9d39a253893d2a1ce5485d3bcf1103376bbfe438452ea5c9054b81bb894fe"
+    },
+    {
+      "check": "typescript",
+      "command": [
+        "npx",
+        "tsc",
+        "--noEmit"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-19T20:21:05.814879+00:00",
+      "duration_seconds": 3.067,
+      "log": "/reports/atlas/checks/typescript.txt",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "check": "changed-file-lint",
+      "command": [
+        "npx",
+        "eslint",
+        "app/components/HistoricalAtlas.tsx",
+        "app/components/RecentDetections.tsx",
+        "worker/firms.ts",
+        "worker/firetrace-api.ts",
+        "app/components/CommandWorkspace.tsx",
+        "app/page.tsx"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-19T20:21:08.882073+00:00",
+      "duration_seconds": 3.975,
+      "log": "/reports/atlas/checks/changed-file-lint.txt",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "check": "data-and-export-reconciliation",
+      "command": [
+        "python3",
+        "tools/verify_atlas.py"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-19T20:21:12.857822+00:00",
+      "duration_seconds": 25.753,
+      "log": "/reports/atlas/checks/data-and-export-reconciliation.txt",
+      "sha256": "b7bb6a8e719a67941bb4b774905f2a3fdbe98cc59c49f330ab9f3db4c8024b14"
+    },
+    {
+      "check": "cloudflare-client-build",
+      "command": [
+        "npm",
+        "run",
+        "build:cloudflare"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-19T20:21:38.610589+00:00",
+      "duration_seconds": 1.265,
+      "log": "/reports/atlas/checks/cloudflare-client-build.txt",
+      "sha256": "ed58105b8086dbafbdc8dbbae07eba4cf16720b1a443253e5cee8122bc1d98b4"
+    },
+    {
+      "check": "cloudflare-worker-dry-run",
+      "command": [
+        "npx",
+        "wrangler",
+        "deploy",
+        "--dry-run",
+        "--config",
+        "wrangler.cloudflare.jsonc"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-11-19T20:21:39.875740+00:00",
+      "duration_seconds": 1.809,
+      "log": "/reports/atlas/checks/cloudflare-worker-dry-run.txt",
+      "sha256": "e91f7a4719e05de4e4c8b61fe23d19ef47f80220b55791bd68ecd606499b6a62"
+    }
+  ],
+  "log_format": "Saved command output has trailing whitespace normalized; exit codes and execution timestamps are unchanged."
+}

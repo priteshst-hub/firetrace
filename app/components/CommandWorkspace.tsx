@@ -163,7 +163,8 @@ function DecisionSupportBrief({ site, month, disposition, onDisposition }: {
   );
 }
 
-export default function CommandWorkspace({ onLocate }: {
+export default function CommandWorkspace({ onLocate, onRecent }: {
+  onRecent?: () => void;
   onLocate: (month: Month, cell: { lon: number; lat: number; m: number; v: number }) => void;
 }) {
   const [load, setLoad] = useState<LoadState>({ status: 'loading' });
@@ -267,10 +268,11 @@ export default function CommandWorkspace({ onLocate }: {
       <header className="command-header">
         <div className="command-mode"><Radio size={16} aria-hidden="true" /> Historical Replay</div>
         <h1>FireTrace Command</h1>
+        {onRecent&&<button onClick={onRecent} className="command-source-link">Open separate LIVE / NRT evidence review</button>}
         <p>FireTrace connects satellite observations to transparent human review decisions.</p>
         <div className="command-header-meta">
           <span>Black Summer · Southeastern Australia</span>
-          <span>Near-real-time feed unavailable</span>
+          <span>Historical replay · archived evidence</span>
         </div>
         <p><a className="command-source-link" href="#command-candidates">Start with a candidate</a> · <a className="command-source-link" href="#command-brief">Review the decision brief</a></p>
         <p className="command-flow">Satellite evidence → warning candidate → analyst decision → response brief</p>

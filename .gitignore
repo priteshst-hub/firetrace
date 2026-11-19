@@ -77,3 +77,6 @@ __pycache__/
 # Editor backups anywhere in the source tree
 *.backup
 *.bak
+
+# Official FIRMS compressed source cache and incremental processing
+/.firms-cache/

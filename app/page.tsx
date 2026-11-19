@@ -4,6 +4,8 @@ import LearnFireTrace from './components/LearnFireTrace';
 import ProjectAssistant from './components/ProjectAssistant';
 import GlobalExplorer from './components/GlobalExplorer';
 import CommandWorkspace from './components/CommandWorkspace';
+import HistoricalAtlas from './components/HistoricalAtlas';
+import RecentDetections from './components/RecentDetections';
 import type { Month } from '../lib/firetrace/command';
 import { Globe2, ArrowDownToLine, ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, Crosshair, Database, Flame, Layers, Map as MapIcon, Maximize2, Minus, Plus, Radio, ShieldCheck, SlidersHorizontal, X } from 'lucide-react';
 
@@ -13,7 +15,7 @@ type Dataset={cells:Cell[];input_sha256:Record<string,string>;source_counts:Reco
 type Timing=Record<string,string>;
 type Geometry={type:string;coordinates:number[][][]|number[][][][]};
 type Geo={features:{geometry:Geometry}[]};
-type View='command'|'learn'|'global'|'explore'|'timing'|'methods';
+type View='atlas'|'lab'|'recent'|'command'|'learn'|'global'|'explore'|'timing'|'methods';
 const MONTHS=['2019-09','2019-10','2019-11','2019-12','2020-01','2020-02','2020-03'];
 const LABELS=['Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
 const FULL=['September 2019','October 2019','November 2019','December 2019','January 2020','February 2020','March 2020'];
@@ -42,7 +44,7 @@ export default function Home() {
  const mainRef=useRef<HTMLElement>(null);
  const [chatOpen,setChatOpen]=useState(false);
  const [commandVisited,setCommandVisited]=useState(false);
- const [error,setError]=useState('');const [view,setView]=useState<View>('global');
+ const [error,setError]=useState('');const [view,setView]=useState<View>('atlas');
  useEffect(()=>{
   const media=matchMedia('(prefers-reduced-motion: reduce)');
   if(media.matches)return;
@@ -106,16 +108,19 @@ export default function Home() {
    <a href="#" className="brand" onClick={e=>{e.preventDefault();setView('global');}} aria-label="FireTrace home"><span className="brand-symbol"><Flame size={27} strokeWidth={1.7}/></span><span>FireTrace<span className="brand-sub">SATELLITE RESEARCH LAB</span></span></a>
    <div className="workspace-label">WORKSPACE <span>01</span></div>
    <nav aria-label="Main navigation">
-    {[{id:'command',name:'FireTrace Command',icon:Crosshair},{id:'learn',name:'How it works',icon:CircleHelp},{id:'global',name:'Compare sensors',icon:Globe2},{id:'explore',name:'Australia case study',icon:MapIcon},{id:'timing',name:'Sensor comparison',icon:Radio},{id:'methods',name:'Data & methodology',icon:Database}].map(({id,name,icon:Icon})=><button key={id} className={`nav-item ${view===id?'active':''}`} aria-label={name} aria-current={view===id?'page':undefined} onClick={()=>{if(id==='command')setCommandVisited(true);setView(id as View);}}><Icon size={18}/><span>{name}</span>{view===id&&<span className="nav-dot"/>}</button>)}
+    {[{id:'atlas',name:'Historical Atlas',icon:Database},{id:'lab',name:'Harmonization Lab',icon:Layers},{id:'recent',name:'Recent detections',icon:Radio},{id:'command',name:'FireTrace Command',icon:Crosshair},{id:'learn',name:'How it works',icon:CircleHelp},{id:'global',name:'Compare sensors',icon:Globe2},{id:'explore',name:'Australia case study',icon:MapIcon},{id:'timing',name:'Sensor comparison',icon:Radio},{id:'methods',name:'Data & methodology',icon:Database}].map(({id,name,icon:Icon})=><button key={id} className={`nav-item ${view===id?'active':''}`} aria-label={name} aria-current={view===id?'page':undefined} onClick={()=>{if(id==='command')setCommandVisited(true);setView(id as View);}}><Icon size={18}/><span>{name}</span>{view===id&&<span className="nav-dot"/>}</button>)}
    </nav>
    <div className="study-box"><span className="tiny">{(view==='global'||view==='learn')?'CURRENT WORKSPACE':'CURRENT STUDY'}</span><div className="study-outline"><Crosshair size={20}/><span>{(view==='global'||view==='learn')?'Planet Earth':<>Southeastern<br/>Australia</>}</span></div><p>{(view==='global'||view==='learn')?'Country explorer':'Black Summer'}<br/><span>2019 — 2020</span></p><div className="study-status"><span/> Historical observations</div></div>
    <div className="sidebar-bottom"><div className="source-sign"><span className="orbit"><Database size={17}/></span><span>Powered by public data<br/><strong>NASA FIRMS</strong></span></div><button className="help-link" onClick={()=>setGuide(true)}><CircleHelp size={17}/> Reading this workspace <ArrowUpRight size={15}/></button><span className="version">RESEARCH PROTOTYPE · V0.1</span></div>
   </aside>
   <div className="workspace">
-   <header className="topbar"><div className="breadcrumb">Workspace <span>/</span> <strong>{view==='command'?'FireTrace Command':view==='learn'?'Start here':view==='global'?'Global observatory':view==='explore'?'Australia study':view==='timing'?'Sensor comparison':'Data & methodology'}</strong></div><div className="top-status"><span className="status-dot"/> Verified source files <span className="divider"/> <span className="mono">11 NOV 2026</span></div></header>
+   <header className="topbar"><div className="breadcrumb">Workspace <span>/</span> <strong>{view==='atlas'?'Historical Atlas':view==='lab'?'Sensor Harmonization Lab':view==='recent'?'Recent detections':view==='command'?'FireTrace Command':view==='learn'?'Start here':view==='global'?'Global observatory':view==='explore'?'Australia study':view==='timing'?'Sensor comparison':'Data & methodology'}</strong></div><div className="top-status"><span className="status-dot"/> Verified source files <span className="divider"/> <span className="mono">11 NOV 2026</span></div></header>
    <main id="main" ref={mainRef}>
-    {commandVisited&&<div hidden={view!=='command'}><CommandWorkspace onLocate={locateCommandCell}/></div>}
-    {view!=='command'&&<div className="page-heading"><div><div className="eyebrow"><span className="orange-line"/> {view==='learn'?'A FIELD GUIDE TO FIRETRACE':view==='global'?'NASA FIRMS / MODIS × VIIRS':'THE BLACK SUMMER STUDY'}</div><h1>{view==='learn'?'Why. How. What you can learn.':view==='global'?'Same Earth. Different observations.':view==='explore'?'Black Summer, in focus.':view==='timing'?'Same place. Different times.':'Evidence comes first.'}</h1><p>{view==='learn'?'Understand the purpose, explore the evidence, and ask better questions.':view==='global'?'Compare what MODIS and VIIRS reported for the same place and period. Understand why the counts differ.':view==='explore'?'Two satellite systems. One extraordinary fire season. Explore what each observed.':view==='timing'?'Compare when satellites observed the same occupied grid cells.':"Every observation has a source. Every comparison has a limit."}</p></div>{view!=='global'&&view!=='learn'&&<button className="export-button" onClick={view==='explore'?exportData:()=>{window.location.href=view==='timing'?'/reports/temporal_sensitivity.csv':'/reports/harmonization-plan.md';}} disabled={view==='explore'&&!data}><ArrowDownToLine size={16}/>{exported&&view==='explore'?'CSV downloaded':'Export '+(view==='explore'?'view':view==='timing'?'results':'protocol')}</button>}</div>}
+    {commandVisited&&<div hidden={view!=='command'}><CommandWorkspace onLocate={locateCommandCell} onRecent={()=>setView('recent')}/></div>}
+    {!['command','atlas','lab','recent'].includes(view)&&<div className="page-heading"><div><div className="eyebrow"><span className="orange-line"/> {view==='learn'?'A FIELD GUIDE TO FIRETRACE':view==='global'?'NASA FIRMS / MODIS × VIIRS':'THE BLACK SUMMER STUDY'}</div><h1>{view==='learn'?'Why. How. What you can learn.':view==='global'?'Same Earth. Different observations.':view==='explore'?'Black Summer, in focus.':view==='timing'?'Same place. Different times.':'Evidence comes first.'}</h1><p>{view==='learn'?'Understand the purpose, explore the evidence, and ask better questions.':view==='global'?'Compare what MODIS and VIIRS reported for the same place and period. Understand why the counts differ.':view==='explore'?'Two satellite systems. One extraordinary fire season. Explore what each observed.':view==='timing'?'Compare when satellites observed the same occupied grid cells.':"Every observation has a source. Every comparison has a limit."}</p></div>{view!=='global'&&view!=='learn'&&<button className="export-button" onClick={view==='explore'?exportData:()=>{window.location.href=view==='timing'?'/reports/temporal_sensitivity.csv':'/reports/harmonization-plan.md';}} disabled={view==='explore'&&!data}><ArrowDownToLine size={16}/>{exported&&view==='explore'?'CSV downloaded':'Export '+(view==='explore'?'view':view==='timing'?'results':'protocol')}</button>}</div>}
+    {view==='atlas'&&<HistoricalAtlas/>}
+    {view==='lab'&&<HistoricalAtlas lab/>}
+    {view==='recent'&&<RecentDetections/>}
     {view==='learn'&&<LearnFireTrace onExplore={()=>setView('global')} onAsk={()=>setChatOpen(true)}/>}
     <div hidden={view!=='global'}><GlobalExplorer active={view==='global'} onStudy={()=>setView('explore')}/></div>
     {view!=='global'&&view!=='command'&&error&&<div role="alert" className="error-box">{error} <button onClick={()=>window.location.reload()}>Try again</button></div>}
