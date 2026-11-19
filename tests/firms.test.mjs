@@ -33,3 +33,29 @@ test('feed caches genuine parsed response, preserves partial source failure and 
  await handleFirms(new Request('https://example.com/api/firms'),env);assert.equal(calls,2);
  }finally{globalThis.fetch=originalFetch;globalThis.caches=originalCaches;}
 });
+test('cache failures preserve validated NASA results and backend errors are sanitized',async()=>{
+ const originalFetch=globalThis.fetch,originalCaches=globalThis.caches,originalError=console.error;
+ const logs=[];console.error=value=>logs.push(value);
+ const secret='PRIVATE_TEST_KEY';
+ globalThis.caches={default:{match:async()=>{throw Error(secret)},put:async()=>{throw Error(secret)}}};
+ globalThis.fetch=async url=>new Response(header+'\n'+`-35,149,${new Date().toISOString().slice(0,10)},0000,${url.includes('MODIS_NRT')?'Terra,80,6.1NRT':'N,n,2.0NRT'},D,2`);
+ try{
+  const request=new Request('https://example.com/api/firms');
+  const response=await handleFirms(request,{FIRMS_MAP_KEY:secret,CHAT_GLOBAL:{limit:async()=>({success:true})}});
+  assert.equal(response.status,200);const body=await response.json();assert.equal(body.sources[0].http_status,200);assert.equal(body.detections.length,2);
+  for(const limiter of [undefined,{limit:async()=>{throw Error(secret)}}]){
+   const result=await handleFirms(request,{FIRMS_MAP_KEY:secret,CHAT_GLOBAL:limiter});assert.equal(result.status,503);assert.equal((await result.json()).status,'unavailable');
+  }
+  assert.ok(!JSON.stringify(logs).includes(secret));assert.ok(logs.every(line=>JSON.parse(line).event==='firms_failure'));
+ }finally{globalThis.fetch=originalFetch;globalThis.caches=originalCaches;console.error=originalError;}
+});
+test('NASA HTTP and schema failures retain status without echoing upstream secrets',async()=>{
+ const originalFetch=globalThis.fetch,originalCaches=globalThis.caches;
+ globalThis.caches={default:{match:async()=>undefined,put:async()=>{}}};
+ globalThis.fetch=async url=>new Response('PRIVATE_TEST_KEY',{status:url.includes('MODIS_NRT')?403:200});
+ try{
+  const response=await handleFirms(new Request('https://example.com/api/firms'),{FIRMS_MAP_KEY:'PRIVATE_TEST_KEY',CHAT_GLOBAL:{limit:async()=>({success:true})}});
+  assert.equal(response.status,502);const text=await response.text(),body=JSON.parse(text);
+  assert.equal(body.detections.length,0);assert.equal(body.sources[0].http_status,403);assert.equal(body.sources[1].http_status,200);assert.equal(body.sources[1].error_code,'upstream_schema');assert.ok(!text.includes('PRIVATE_TEST_KEY'));
+ }finally{globalThis.fetch=originalFetch;globalThis.caches=originalCaches;}
+});

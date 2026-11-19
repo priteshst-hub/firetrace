@@ -39,34 +39,70 @@ export function parseFirms(text: string, source: string, now = Date.now()): Dete
   }
   return result;
 }
-const pending = new Map<string, Promise<Response>>();
-export async function handleFirms(request: Request, env: FirmsEnv): Promise<Response> {
+async function feed(request: Request, env: FirmsEnv): Promise<Response> {
   const json = (body: unknown, status = 200) => Response.json(body,{status,headers:{'Cache-Control':'no-store'}});
   if (request.method !== 'GET') return json({status:'error',error:'GET required'},405);
   if (!env.FIRMS_MAP_KEY) return json({status:'unavailable',error:'NASA MAP_KEY is not configured. No authenticated live request has been verified.'},503);
   // Stable cache identity independent of request query strings and secrets.
   const cacheKey = new Request(new URL('/api/firms',request.url).href);
-  const cache = (caches as unknown as {default: Cache}).default;
-  const cached = await cache.match(cacheKey); if (cached) return cached;
-  if (!(await env.CHAT_GLOBAL.limit({key:'firms-area-global'})).success) return json({status:'rate_limited',error:'Feed request limit reached; retry later.'},429);
-  const key = cacheKey.url;
-  const existing = pending.get(key); if (existing) return (await existing).clone();
-  const job = (async () => {
+  const cache = typeof caches === 'undefined' ? undefined : (caches as unknown as {default: Cache}).default;
+  let cached;
+  try { cached = await cache?.match(cacheKey); } catch { reportFailure('cache_read'); }
+  if (cached) return cached;
+  if (!env.CHAT_GLOBAL?.limit) return unavailable('limiter_binding_missing');
+  let allowed;
+  try { allowed = await env.CHAT_GLOBAL.limit({key:'firms-area-global'}); } catch { return unavailable('limiter_failure'); }
+  if (!allowed.success) return json({status:'rate_limited',error:'Feed request limit reached; retry later.'},429);
+  // Keep upstream I/O scoped to this invocation; only completed responses use Cache API.
+  return await (async () => {
     const sources = ['MODIS_NRT','VIIRS_SNPP_NRT'];
     const results = await Promise.all(sources.map(async source => {
+      let httpStatus: number | undefined;
+      let stage = 'upstream_transport';
       try {
         const response = await fetch(`https://firms.modaps.eosdis.nasa.gov/api/area/csv/${encodeURIComponent(env.FIRMS_MAP_KEY!)}/${source}/112,-45,154,-9/2`,{signal:AbortSignal.timeout(25000)});
-        if (!response.ok) return {source,status:'error',error:`NASA HTTP ${response.status}`,detections:[] as Detection[]};
-        const text = await response.text(); if (text.length > 12_000_000) throw Error('Oversized feed');
-        return {source,status:'ok',detections:parseFirms(text,source)};
-      } catch { return {source,status:'error',error:'NASA response unavailable, timed out or failed schema validation',detections:[] as Detection[]}; }
+        httpStatus = response.status;
+        if (!response.ok) return {source,status:'error',http_status:response.status,error_code:'upstream_http',error:`NASA HTTP ${response.status}`,detections:[] as Detection[]};
+        stage = 'upstream_body';
+        const text = await boundedText(response);
+        stage = 'upstream_schema';
+        return {source,status:'ok',http_status:response.status,detections:parseFirms(text,source)};
+      } catch { return {source,status:'error',...(httpStatus !== undefined ? {http_status:httpStatus} : {}),error_code:stage,error:'NASA response unavailable, timed out or failed schema validation',detections:[] as Detection[]}; }
     }));
     const detections = results.flatMap(r => r.detections).sort((a,b) => b.acquired_at.localeCompare(a.acquired_at));
     const latest = detections[0]?.acquired_at ?? null;
     const ok = results.filter(r => r.status === 'ok').length;
-    const response = Response.json({status:ok===2?'ok':ok?'partial':'unavailable',retrieved_at:new Date().toISOString(),publication_time:null,publication_note:'FIRMS Area CSV does not supply per-record publication time.',latest_acquisition:latest,stale:latest ? Date.now()-Date.parse(latest)>24*3600000 : null,sources:results.map(r=>({source:r.source,status:r.status,...('error' in r?{error:r.error}:{})})),detections,scope:'Australia bounding box; may include offshore/neighbouring territory; two UTC days; NRT subject to revision; detections are not unique fires.'},{status:ok?200:502,headers:{'Cache-Control':`public, max-age=${ok?300:30}`}});
-    await cache.put(cacheKey,response.clone()); return response;
+    const response = Response.json({status:ok===2?'ok':ok?'partial':'unavailable',retrieved_at:new Date().toISOString(),publication_time:null,publication_note:'FIRMS Area CSV does not supply per-record publication time.',latest_acquisition:latest,stale:latest ? Date.now()-Date.parse(latest)>24*3600000 : null,sources:results.map(r=>({source:r.source,status:r.status,...('http_status' in r?{http_status:r.http_status}:{}),...('error_code' in r?{error_code:r.error_code}:{}),...('error' in r?{error:r.error}:{})})),detections,scope:'Australia bounding box; may include offshore/neighbouring territory; two UTC days; NRT subject to revision; detections are not unique fires.'},{status:ok?200:502,headers:{'Cache-Control':`public, max-age=${ok?300:30}`}});
+    try { await cache?.put(cacheKey,response.clone()); } catch { reportFailure('cache_write'); }
+    return response;
   })();
-  pending.set(key,job);
-  try { return (await job).clone(); } finally { pending.delete(key); }
+}
+
+// Never include exception messages, upstream bodies or credential-bearing URLs.
+function reportFailure(stage: string) {
+  console.error(JSON.stringify({event:'firms_failure',stage}));
+}
+function unavailable(code: string): Response {
+  reportFailure(code);
+  return Response.json({status:'unavailable',error_code:code,error:'Feed backend unavailable. Authenticated live detections have not been verified for this request.'},{status:503,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
+}
+export async function handleFirms(request: Request, env: FirmsEnv): Promise<Response> {
+  try { return await feed(request,env); }
+  catch { return unavailable('backend_failure'); }
+}
+
+async function boundedText(response: Response): Promise<string> {
+  const reader = response.body?.getReader();
+  if (!reader) throw Error('Missing feed body');
+  const decoder = new TextDecoder();
+  let bytes = 0, text = '';
+  try {
+    while (true) {
+      const {done,value} = await reader.read();
+      if (done) return text + decoder.decode();
+      bytes += value.byteLength;
+      if (bytes > 12_000_000) { await reader.cancel(); throw Error('Oversized feed'); }
+      text += decoder.decode(value,{stream:true});
+    }
+  } finally { reader.releaseLock(); }
 }

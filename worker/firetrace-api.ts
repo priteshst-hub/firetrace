@@ -1,3 +1,4 @@
+import { isCoverageQuestion, COVERAGE_ANSWER } from './coverage';
 
 import knowledge from './knowledge.json';
 import { handleFirms } from './firms';
@@ -48,6 +49,9 @@ const norm = (text: string) =>
 
 const FIRETRACE_TERMS = [
   'firetrace',
+  'atlas',
+  'command',
+  'years',
   'modis',
   'viirs',
   'firms',
@@ -180,6 +184,7 @@ Use the trusted PROJECT REFERENCE supplied below.
 Do not invent statistics, dates, country counts, or capabilities.
 
 SCIENTIFIC RULES:
+- The Australia Historical Atlas covers 2001–2025 (25 years). The global globe archive covers 2019–2020 only. COMMAND is a separate Black Summer 2019–2020 historical replay. Never describe the entire site as offering only two years.
 - Global globe and COMMAND replay are historical. The separate Australia Atlas and experimental bridge are described by atlas_upgrade when present. A separate NRT endpoint requires a Worker MAP_KEY; do not assume authenticated verification or current detections.
 - Detection totals represent retained source CSV rows.
 - Detections are not unique wildfires or burned area.
@@ -472,6 +477,10 @@ export async function handleChat(
         error:
           'The assistant is busy. Please try again shortly.'
       }, 429);
+    }
+
+    if (isCoverageQuestion(latestQuestion)) {
+      return json({answer:COVERAGE_ANSWER,sources,model:'FireTrace verified coverage reference',snapshot:knowledge.snapshot});
     }
 
     const reference = projectContext(
